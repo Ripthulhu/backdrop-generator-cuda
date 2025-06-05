@@ -5,7 +5,7 @@
   <Network>bridge</Network>
   <Shell>bash</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/vLX42/backdrop-generator</Support>
+  <Support>https://forums.unraid.net/topic/190942-support-backdrop-generator-embyjellyfin-backdrop-video-generator/</Support>
   <Project>https://github.com/vLX42/backdrop-generator</Project>
   <Overview>Generates silent .mp4 backdrop clips from your Jellyfin/Emby movie and TV libraries using FFmpeg. Fully configurable via UI.</Overview>
   <Category>MediaApplication:VideoMediaServer</Category>
