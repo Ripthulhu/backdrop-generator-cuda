@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>backdrop-generator</Name>
+  <Repository>vlx42/backdrop-generator</Repository>
+  <Network>bridge</Network>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/vLX42/backdrop-generator</Support>
+  <Project>https://github.com/vLX42/backdrop-generator</Project>
+  <Overview>Generates silent .mp4 backdrop clips from your Jellyfin/Emby movie and TV libraries using FFmpeg. Fully configurable via UI.</Overview>
+  <Category>MediaApplication:VideoMediaServer</Category>
+  <WebUI/>
+  <Icon>https://raw.githubusercontent.com/vLX42/backdrop-generator/refs/heads/main/main/icon.png</Icon>
+
+  <!-- Required paths -->
+  <Config Name="Movies Folder" Target="/movies" Default="/mnt/user/media/Movies" Mode="rw" Description="Path to your Movies folder." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/media/Movies</Config>
+  <Config Name="TV Folder" Target="/tv" Default="/mnt/user/media/TV" Mode="rw" Description="Path to your TV Shows folder." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/media/TV</Config>
+
+  <!-- Script Parameters -->
+  <Config Name="Clip Length" Target="LENGTH" Default="7" Mode="rw" Description="Length of each backdrop clip in seconds." Type="Variable" Display="always" Required="false" Mask="false">7</Config>
+  <Config Name="Resolution" Target="RESOLUTION" Default="720" Mode="rw" Description="Output resolution (720 or 1080)." Type="Variable" Display="always" Required="false" Mask="false">720</Config>
+  <Config Name="CRF" Target="CRF" Default="30" Mode="rw" Description="Compression quality (lower is better quality, 28–30 recommended)." Type="Variable" Display="always" Required="false" Mask="false">30</Config>
+  <Config Name="Timeout" Target="TIMEOUT" Default="30" Mode="rw" Description="FFmpeg timeout per file (seconds)." Type="Variable" Display="always" Required="false" Mask="false">30</Config>
+  <Config Name="Interval" Target="INTERVAL" Default="21600" Mode="rw" Description="Time between scans in seconds (default: 6 hours)." Type="Variable" Display="always" Required="false" Mask="false">21600</Config>
+  <Config Name="Force Overwrite" Target="FORCE" Default="false" Mode="rw" Description="Force re-generation even if backdrop already exists." Type="Variable" Display="always" Required="false" Mask="false">false</Config>
+  <Config Name="Daemon Mode" Target="DAEMON" Default="true" Mode="rw" Description="Enable daemon mode (runs continuously)." Type="Variable" Display="always" Required="false" Mask="false">true</Config>
+</Container>
