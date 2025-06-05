@@ -10,7 +10,7 @@
   <Overview>Generates silent .mp4 backdrop clips from your Jellyfin/Emby movie and TV libraries using FFmpeg. Fully configurable via UI.</Overview>
   <Category>MediaApplication:VideoMediaServer</Category>
   <WebUI/>
-  <Icon>https://raw.githubusercontent.com/vLX42/backdrop-generator/refs/heads/main/main/icon.png</Icon>
+  <Icon>https://raw.githubusercontent.com/vLX42/backdrop-generator/refs/heads/main/icon.png</Icon>
 
   <!-- Required paths -->
   <Config Name="Movies Folder" Target="/movies" Default="/mnt/user/media/Movies" Mode="rw" Description="Path to your Movies folder." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/media/Movies</Config>
