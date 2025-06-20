@@ -4,10 +4,13 @@ Generates short `.mp4` backdrop videos for Jellyfin or Emby libraries using FFmp
 
 ## 🎥 Features
 - Adjustable length, resolution, and compression
+- **Audio control**: Generate clips with or without audio (default: with audio)
+- **Expert mode**: Add custom FFmpeg parameters for advanced users
 - Avoids upscaling small sources
 - Safe random clip offset (not from start or end)
 - Automatically skips already processed files unless `--force` is used
 - Optional daemon mode for periodic rescanning
+- Failed attempt tracking with placeholder files
 
 ## 🚀 Usage
 
@@ -31,12 +34,54 @@ docker run --rm \
   --timeout 30
 ```
 
-### Example Flags
-- `--length`: Clip duration in seconds (default: 5)
-- `--resolution`: 720 or 1080 (default: 720)
-- `--crf`: Compression factor (lower is better quality; default: 28)
-- `--force`: Regenerate even if backdrop exists
-- `--timeout`: Timeout per FFmpeg call in seconds
+### Generate silent clips
+```bash
+docker run --rm \
+  -v /path/to/Movies:/movies \
+  -v /path/to/TV:/tv \
+  -e NO_AUDIO=true \
+  backdrop-generator
+```
+
+### Expert mode with custom FFmpeg parameters
+```bash
+docker run --rm \
+  -v /path/to/Movies:/movies \
+  -v /path/to/TV:/tv \
+  -e FFMPEG_EXTRA="-movflags +faststart -pix_fmt yuv420p" \
+  backdrop-generator
+```
+
+### Example Flags & Environment Variables
+- `--length` / `LENGTH`: Clip duration in seconds (default: 5)
+- `--resolution` / `RESOLUTION`: 720 or 1080 (default: 720)
+- `--crf` / `CRF`: Compression factor (lower is better quality; default: 28)
+- `--force` / `FORCE`: Regenerate even if backdrop exists (default: false)
+- `--timeout` / `TIMEOUT`: Timeout per FFmpeg call in seconds (default: 300)
+- `--no-audio` / `NO_AUDIO`: Generate clips without audio (default: false)
+- `--ffmpeg-extra` / `FFMPEG_EXTRA`: Custom FFmpeg parameters for expert users
+
+## 🔧 Advanced Configuration
+
+### Audio Options
+By default, clips include audio encoded with AAC. To generate silent clips:
+- Set `NO_AUDIO=true` environment variable, or
+- Use `--no-audio` flag when running directly
+
+### Expert Mode
+Add custom FFmpeg parameters using the `FFMPEG_EXTRA` environment variable:
+```bash
+# Example: Add fast start flag and specific pixel format
+FFMPEG_EXTRA="-movflags +faststart -pix_fmt yuv420p"
+
+# Example: Tune for film content with high profile
+FFMPEG_EXTRA="-tune film -profile:v high"
+
+# Example: Custom bitrate control
+FFMPEG_EXTRA="-maxrate 2M -bufsize 4M"
+```
+
+**Note**: Custom parameters are added to the FFmpeg command line. Use quotes for parameters with spaces.
 
 ## 🐳 Dockerfile Based
 This script uses FFmpeg inside a lightweight Python 3 image with minimal dependencies.

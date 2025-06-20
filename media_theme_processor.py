@@ -4,14 +4,16 @@ Generate short backdrop clips for Emby/Jellyfin libraries.
 
 Features
 ========
-* Adjustable **clip length** (`--length`, default 5 s).
-* Selectable **resolution** 720 p or 1080 p (`--resolution`, default 720).
+* Adjustable **clip length** (`--length`, default 5 s).
+* Selectable **resolution** 720 p or 1080 p (`--resolution`, default 720).
   The filter only downsizes → no up‑scaling of small sources.
 * Tunable **compression** via CRF (`--crf`, default 28) and preset
   (`--preset`, default *veryfast*).
+* **Audio control** (`--no-audio`) to generate silent clips (default includes audio).
+* **Expert mode** (`--ffmpeg-extra`) to add custom FFmpeg parameters.
 * **Overwrite** mode (`--force`) to re‑generate even if the backdrop exists
   or a *.failed* placeholder is present.
-* Optional **per‑folder delay** (`--delay`, default 0 s).
+* Optional **per‑folder delay** (`--delay`, default 0 s).
 * Daemon mode with re‑scan interval just as before.
 """
 
@@ -21,6 +23,7 @@ import argparse
 import json
 import logging
 import random
+import shlex
 import subprocess
 import sys
 import time
@@ -67,6 +70,8 @@ class MediaBackdropProcessor:
         preset: str,
         delay: float,
         force: bool,
+        include_audio: bool,
+        ffmpeg_extra: str,
     ) -> None:
         self.movies_path = Path(movies_path)
         self.tv_path = Path(tv_path)
@@ -77,6 +82,8 @@ class MediaBackdropProcessor:
         self.preset = preset
         self.delay = delay
         self.force = force
+        self.include_audio = include_audio
+        self.ffmpeg_extra = ffmpeg_extra
 
         self.width, self.height = (1280, 720) if resolution == 720 else (1920, 1080)
 
@@ -136,8 +143,6 @@ class MediaBackdropProcessor:
             str(self.clip_len),
             "-c:v",
             "libx264",
-            "-c:a",
-            "aac",
             "-vf",
             scale_pad,
             "-preset",
@@ -146,8 +151,26 @@ class MediaBackdropProcessor:
             str(self.crf),
             "-avoid_negative_ts",
             "make_zero",
-            str(dst),
         ]
+
+        # Handle audio options
+        if self.include_audio:
+            ff_cmd.extend(["-c:a", "aac"])
+        else:
+            ff_cmd.extend(["-an"])  # Remove audio stream
+
+        # Add custom FFmpeg parameters if provided
+        if self.ffmpeg_extra:
+            try:
+                # Parse the extra parameters safely
+                extra_params = shlex.split(self.ffmpeg_extra)
+                ff_cmd.extend(extra_params)
+                logger.debug("Added custom FFmpeg parameters: %s", extra_params)
+            except ValueError as exc:
+                logger.warning("Could not parse custom FFmpeg parameters '%s': %s", self.ffmpeg_extra, exc)
+
+        # Add output file at the end
+        ff_cmd.append(str(dst))
 
         try:
             subprocess.run(ff_cmd, capture_output=True, text=True, timeout=self.timeout, check=True)
@@ -254,6 +277,9 @@ def parse_cli() -> argparse.Namespace:
     p.add_argument("--crf", type=int, default=28, help="x264 CRF value (default 28 → smaller file)")
     p.add_argument("--preset", default="veryfast", help="x264 preset (default 'veryfast')")
 
+    p.add_argument("--no-audio", action="store_true", help="Generate clips without audio (default includes audio)")
+    p.add_argument("--ffmpeg-extra", type=str, default="", help="Expert mode: additional FFmpeg parameters (e.g., '--ffmpeg-extra \"-movflags +faststart -pix_fmt yuv420p\"')")
+
     p.add_argument("--timeout", type=int, default=BACKDROP_TIMEOUT_DEFAULT, help="FFmpeg timeout in seconds")
     p.add_argument("--delay", type=float, default=0, help="Seconds to wait after each folder")
     p.add_argument("--force", action="store_true", help="Overwrite existing backdrops and ignore placeholders")
@@ -274,16 +300,23 @@ def main() -> None:
         preset=args.preset,
         delay=args.delay,
         force=args.force,
+        include_audio=not args.no_audio,  # Default True, False when --no-audio is set
+        ffmpeg_extra=args.ffmpeg_extra,
     )
+
+    audio_status = "with audio" if not args.no_audio else "without audio"
+    extra_info = f" + custom params: {args.ffmpeg_extra}" if args.ffmpeg_extra else ""
 
     if args.daemon:
         logger.info(
-            "Daemon mode – interval:%ds len:%ds res:%dp crf:%d preset:%s",
+            "Daemon mode – interval:%ds len:%ds res:%dp crf:%d preset:%s %s%s",
             args.interval,
             args.length,
             args.resolution,
             args.crf,
             args.preset,
+            audio_status,
+            extra_info,
         )
         try:
             while True:
@@ -293,6 +326,7 @@ def main() -> None:
         except KeyboardInterrupt:
             logger.info("Daemon stopped by user")
     else:
+        logger.info("Single run mode – %s%s", audio_status, extra_info)
         processor.run_once()
 
 
