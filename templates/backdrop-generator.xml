@@ -9,7 +9,7 @@
   <Privileged>false</Privileged>
   <Support>https://forums.unraid.net/topic/190942-support-backdrop-generator-embyjellyfin-backdrop-video-generator/</Support>
   <Project>https://github.com/vLX42/backdrop-generator</Project>
-  <Overview>Generates .mp4 backdrop clips from your Jellyfin/Emby movie and TV libraries using FFmpeg. Fully configurable via Unraid UI.</Overview>
+  <Overview>Generates .mp4 backdrop clips from your Jellyfin/Emby movie and TV libraries using FFmpeg. Supports audio control and expert mode for custom FFmpeg parameters. Fully configurable via Unraid UI.</Overview>
   <Category>MediaApp:Video</Category>
   <WebUI/>
   <TemplateURL>https://raw.githubusercontent.com/vLX42/backdrop-generator/refs/heads/main/templates/backdrop-generator.xml</TemplateURL>
@@ -29,5 +29,7 @@
   <Config Name="Interval" Target="INTERVAL" Default="21600" Mode="rw" Description="Time between scans in seconds (default: 6 hours)." Type="Variable" Display="always" Required="false" Mask="false">21600</Config>
   <Config Name="Force Overwrite" Target="FORCE" Default="false" Mode="rw" Description="Force re-generation even if backdrop already exists." Type="Variable" Display="always" Required="false" Mask="false">false</Config>
   <Config Name="Daemon Mode" Target="DAEMON" Default="true" Mode="rw" Description="Enable daemon mode (runs continuously)." Type="Variable" Display="always" Required="false" Mask="false">true</Config>
+  <Config Name="No Audio" Target="NO_AUDIO" Default="false" Mode="rw" Description="Generate clips without audio (default: false = include audio)." Type="Variable" Display="always" Required="false" Mask="false">false</Config>
+  <Config Name="Expert Mode - Custom FFmpeg Parameters" Target="FFMPEG_EXTRA" Default="" Mode="rw" Description="Advanced: Additional FFmpeg parameters (e.g., '-movflags +faststart -pix_fmt yuv420p'). Leave empty for default behavior." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
   <TailscaleStateDir/>
 </Container>
