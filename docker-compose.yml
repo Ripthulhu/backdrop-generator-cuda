@@ -1,0 +1,39 @@
+services:
+  backdrop-generator:
+    build: .
+    image: vlx42/backdrop-generator
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu, video]
+
+    volumes:
+      - /path/to/movies:/movies
+      - /path/to/tv:/tv
+      - /path/to/anime:/anime
+
+    environment:
+      LENGTH: "20"
+      RESOLUTION: "1080"
+      CRF: "28"
+      TIMEOUT: "30"
+      FORCE: "true"
+
+      DAEMON: "false"
+      INTERVAL: "21600"
+
+      ANIME_PATH: /anime
+
+      FFMPEG_PRE: >-
+        -hwaccel cuda -hwaccel_output_format cuda
+      FFMPEG_EXTRA: >-
+        -c:v hevc_nvenc -preset p5
+
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: video,utility
+
+    restart: unless-stopped
