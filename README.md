@@ -16,16 +16,17 @@ Generates short `.mp4` backdrop videos for Jellyfin or Emby libraries using FFmp
 
 ### Build the Docker image
 ```bash
-docker build -t backdrop-generator .
+docker compose build
 ```
 
 ### Run the generator
-```docker compose up
+```
+docker compose up
 ```
 
 ### Generate silent clips
 ```
-  Add the ENV var NO_AUDIO=true to the compose file
+Add the ENV var NO_AUDIO=true to the compose file
 ```
 
 
