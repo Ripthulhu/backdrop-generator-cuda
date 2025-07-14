@@ -20,37 +20,14 @@ docker build -t backdrop-generator .
 ```
 
 ### Run the generator
-```bash
-docker run --rm \
-  -v /path/to/Movies:/movies \
-  -v /path/to/TV:/tv \
-  backdrop-generator \
-  --movies /movies \
-  --tv /tv \
-  --length 5 \
-  --resolution 720 \
-  --crf 28 \
-  --force \
-  --timeout 30
+```docker compose up
 ```
 
 ### Generate silent clips
-```bash
-docker run --rm \
-  -v /path/to/Movies:/movies \
-  -v /path/to/TV:/tv \
-  -e NO_AUDIO=true \
-  backdrop-generator
+```
+  Add the ENV var NO_AUDIO=true to the compose file
 ```
 
-### Expert mode with custom FFmpeg parameters
-```bash
-docker run --rm \
-  -v /path/to/Movies:/movies \
-  -v /path/to/TV:/tv \
-  -e FFMPEG_EXTRA="-movflags +faststart -pix_fmt yuv420p" \
-  backdrop-generator
-```
 
 ### Example Flags & Environment Variables
 - `--length` / `LENGTH`: Clip duration in seconds (default: 5)
