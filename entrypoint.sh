@@ -1,34 +1,36 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Optional: echo for visibility
 echo "Launching backdrop generator with:"
-echo "  --length $LENGTH"
-echo "  --resolution $RESOLUTION"
-echo "  --crf $CRF"
-echo "  --timeout $TIMEOUT"
-echo "  --interval $INTERVAL"
-echo "  FORCE=$FORCE"
-echo "  DAEMON=$DAEMON"
-echo "  NO_AUDIO=$NO_AUDIO"
-echo "  FFMPEG_EXTRA=$FFMPEG_EXTRA"
+echo "  --length      ${LENGTH:-5}"
+echo "  --resolution  ${RESOLUTION:-720}"
+echo "  --crf         ${CRF:-28}"
+echo "  --timeout     ${TIMEOUT:-30}"
+echo "  --interval    ${INTERVAL:-21600}"
+echo "  FORCE         ${FORCE:-false}"
+echo "  DAEMON        ${DAEMON:-false}"
+echo "  NO_AUDIO      ${NO_AUDIO:-false}"
+echo "  ANIME_PATH    ${ANIME_PATH:-/anime}"
+echo "  FFMPEG_PRE           ${FFMPEG_PRE:-<empty>}"
+echo "  FFMPEG_EXTRA         ${FFMPEG_EXTRA:-<empty>}"
+echo
 
-# Build args
 args=(
   --movies /movies
-  --tv /tv
-  --length "${LENGTH:-5}"
-  --resolution "${RESOLUTION:-720}"
-  --crf "${CRF:-28}"
-  --timeout "${TIMEOUT:-30}"
-  --interval "${INTERVAL:-21600}"
+  --tv     /tv
+  --anime  "${ANIME_PATH:-/anime}"
+  --length      "${LENGTH:-5}"
+  --resolution  "${RESOLUTION:-720}"
+  --crf         "${CRF:-28}"
+  --timeout     "${TIMEOUT:-30}"
+  --interval    "${INTERVAL:-21600}"
 )
 
-# Conditionally add flags
-[ "$FORCE" = "true" ] && args+=(--force)
-[ "$DAEMON" = "true" ] && args+=(--daemon)
-[ "$NO_AUDIO" = "true" ] && args+=(--no-audio)
+[[ "${FORCE:-}"    == "true" ]] && args+=( --force )
+[[ "${DAEMON:-}"   == "true" ]] && args+=( --daemon )
+[[ "${NO_AUDIO:-}" == "true" ]] && args+=( --no-audio )
 
-# Add custom FFmpeg parameters if provided
-[ -n "$FFMPEG_EXTRA" ] && args+=(--ffmpeg-extra "$FFMPEG_EXTRA")
+[[ -n "${FFMPEG_PRE:-}"   ]] && args+=( --ffmpeg-pre="${FFMPEG_PRE}" )
+[[ -n "${FFMPEG_EXTRA:-}" ]] && args+=( --ffmpeg-extra="${FFMPEG_EXTRA}" )
 
-exec python media_theme_processor.py "${args[@]}"
+exec python /app/media_theme_processor.py "${args[@]}"
